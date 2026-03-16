@@ -1,0 +1,6 @@
+kaggle.json
+*.zip
+data/
+models/
+__pycache__/
+.ipynm_checkpoints/
