@@ -1,6 +1,48 @@
 kaggle.json
 *.zip
-data/
-models/
-__pycache__/
 .ipynm_checkpoints/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Models / weights / outputs
+models/
+checkpoints/
+outputs/
+artifacts/
+*.h5
+*.keras
+*.pt
+*.pth
+*.ckpt
+*.pkl
+*.joblib
+
+# Data
+# Keep raw dataset out of Git unless it is tiny and shareable
+data/
+*.wav
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+*.log
