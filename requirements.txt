@@ -1,9 +1,11 @@
+librosa
 numpy
 pandas
-scikit-learn
-librosa
 matplotlib
-jupyter
-transformers
+tensorflow
 torch
 torchaudio
+transformers
+scikit-learn
+jupyter
+notebook
