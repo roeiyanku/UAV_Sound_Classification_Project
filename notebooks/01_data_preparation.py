@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 """01_data_preparation.ipynb
 
-Simple local data preparation script.
-Run from repository root:
-    python notebooks/01_data_preparation.py
+Local (non-Colab) data preparation notebook script.
 """
 
 from pathlib import Path
@@ -13,12 +11,28 @@ import joblib
 from collections import Counter
 from sklearn.model_selection import train_test_split
 
-DATA_DIR = Path("data/pump_sound_data")
-PROCESSED_DIR = Path("artifacts/processed")
+
+def find_project_root() -> Path:
+    """Find the project root by walking up until requirements.txt is found."""
+    if "__file__" in globals():
+        start = Path(__file__).resolve().parent
+    else:
+        start = Path.cwd().resolve()
+
+    for candidate in [start, *start.parents]:
+        if (candidate / "requirements.txt").exists():
+            return candidate
+    return start
+
+
+PROJECT_ROOT = find_project_root()
+DATA_DIR = PROJECT_ROOT / "data" / "pump_sound_data"
+PROCESSED_DIR = PROJECT_ROOT / "artifacts" / "processed"
 PROCESSED_DIR.mkdir(parents=True, exist_ok=True)
 
 files = glob.glob(os.path.join(DATA_DIR, "**", "*.wav"), recursive=True)
 
+print("Project root:", PROJECT_ROOT)
 print("Data directory:", DATA_DIR)
 print("Number of audio files found:", len(files))
 print("Example files:", files[:5])
@@ -26,10 +40,11 @@ print("Example files:", files[:5])
 if not files:
     raise FileNotFoundError(
         f"No .wav files found under {DATA_DIR}. "
-        "Run notebooks/data_download.ipynb first or place data there."
+        "Run notebooks/data_download.ipynb first or place the dataset in that folder."
     )
 
 labels = [os.path.basename(os.path.dirname(f)) for f in files]
+
 unique_labels = sorted(list(set(labels)))
 label_to_int = {label: i for i, label in enumerate(unique_labels)}
 int_labels = [label_to_int[label] for label in labels]
@@ -70,4 +85,5 @@ data_splits = {
 
 save_path = PROCESSED_DIR / "processed_audio_splits.joblib"
 joblib.dump(data_splits, save_path)
+
 print(f"Data splits saved successfully to: {save_path}")

@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 """02_feature_extraction.ipynb
 
-Simple local feature extraction script.
-Run from repository root:
-    python notebooks/02_feature_extraction.py
+Local (non-Colab) feature extraction notebook script.
 """
 
 from pathlib import Path
@@ -20,8 +18,25 @@ from transformers import (
     Wav2Vec2Model,
 )
 
-PROCESSED_DIR = Path("artifacts/processed")
+
+def find_project_root() -> Path:
+    if "__file__" in globals():
+        start = Path(__file__).resolve().parent
+    else:
+        start = Path.cwd().resolve()
+
+    for candidate in [start, *start.parents]:
+        if (candidate / "requirements.txt").exists():
+            return candidate
+    return start
+
+
+PROJECT_ROOT = find_project_root()
+PROCESSED_DIR = PROJECT_ROOT / "artifacts" / "processed"
 PROCESSED_DIR.mkdir(parents=True, exist_ok=True)
+
+splits_path = PROCESSED_DIR / "processed_audio_splits.joblib"
+data = joblib.load(splits_path)
 
 data = joblib.load(PROCESSED_DIR / "processed_audio_splits.joblib")
 X_train = data["X_train"]
@@ -31,6 +46,7 @@ y_val = data["y_val"]
 X_test = data["X_test"]
 y_test = data["y_test"]
 
+RANDOM_STATE = 42
 SAMPLE_RATE = 16000
 CLIP_SECONDS = 5
 EMBEDDING_BATCH_SIZE = 4
@@ -103,26 +119,25 @@ wav2vec_start = time.time()
 wav2vec_train_features = extract_wav2vec_features(X_train)
 wav2vec_val_features = extract_wav2vec_features(X_val)
 wav2vec_test_features = extract_wav2vec_features(X_test)
-print("Wav2Vec2 extraction time (s):", round(time.time() - wav2vec_start, 2))
+wav2vec_train_time = time.time() - wav2vec_start
+print("Wav2Vec2 extraction time (s):", round(wav2vec_train_time, 2))
+print("Wav2Vec2 feature shapes:", wav2vec_train_features.shape, wav2vec_val_features.shape, wav2vec_test_features.shape)
 
-joblib.dump(
-    {
-        "ast_train_features": ast_train_features,
-        "ast_val_features": ast_val_features,
-        "ast_test_features": ast_test_features,
-    },
-    PROCESSED_DIR / "extracted_ast_features.joblib",
-)
+ast_feature_data = {
+    "ast_train_features": ast_train_features,
+    "ast_val_features": ast_val_features,
+    "ast_test_features": ast_test_features,
+}
+joblib.dump(ast_feature_data, PROCESSED_DIR / "extracted_ast_features.joblib")
 
-joblib.dump(
-    {
-        "wav2vec_train_features": wav2vec_train_features,
-        "wav2vec_val_features": wav2vec_val_features,
-        "wav2vec_test_features": wav2vec_test_features,
-    },
-    PROCESSED_DIR / "extracted_wav2vec_features.joblib",
-)
+wav2vec_feature_data = {
+    "wav2vec_train_features": wav2vec_train_features,
+    "wav2vec_val_features": wav2vec_val_features,
+    "wav2vec_test_features": wav2vec_test_features,
+}
+joblib.dump(wav2vec_feature_data, PROCESSED_DIR / "extracted_wav2vec_features.joblib")
 
-joblib.dump({"train": y_train, "val": y_val, "test": y_test}, PROCESSED_DIR / "labels.joblib")
+labels = {"train": y_train, "val": y_val, "test": y_test}
+joblib.dump(labels, PROCESSED_DIR / "labels.joblib")
 
 print("Saved extracted features and labels to:", PROCESSED_DIR)

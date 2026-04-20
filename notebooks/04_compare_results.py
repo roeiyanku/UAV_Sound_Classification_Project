@@ -16,8 +16,6 @@ RESULTS_DIR = Path("artifacts/results")
 FIGURES_DIR = Path("artifacts/figures")
 FIGURES_DIR.mkdir(parents=True, exist_ok=True)
 
-print("Results dir:", RESULTS_DIR)
-print("Figures dir:", FIGURES_DIR)
 
 csv_files = glob.glob(os.path.join(RESULTS_DIR, "*.csv"))
 if not csv_files:
