@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<meta content="#0a1520" name="theme-color"/>
+<meta content="Acoustic UAV Detection on Edge Devices — an RMOT computer-science final project using real-world audio, pretrained embeddings, anomaly detection, and TinyML." name="description"/>
+<title>Acoustic UAV Detection on Edge Devices</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#08131d;--bg2:#0c1925;--surface:#101f2c;--surface2:#132535;
+  --line:#25394b;--ink:#f1f6fa;--muted:#aab8c4;--faint:#708292;
+  --cyan:#55d6d9;--blue:#78aef8;--amber:#efb45c;--green:#6ed3a8;--red:#ed6d85;
+  --sans:'Inter',system-ui,sans-serif;--mono:'JetBrains Mono',monospace;
+  --shadow:0 18px 50px rgba(0,0,0,.22)
+}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.65;-webkit-font-smoothing:antialiased}a{color:inherit}img,video{display:block;max-width:100%}.wrap{width:min(1160px,calc(100% - 48px));margin:auto}section{padding:88px 0;border-top:1px solid var(--line)}h1,h2,h3,p{margin-top:0}h1{font-size:clamp(42px,6.5vw,72px);line-height:1.04;letter-spacing:-.045em;margin-bottom:22px}h2{font-size:clamp(30px,4vw,46px);line-height:1.12;letter-spacing:-.03em;margin-bottom:18px}h3{font-size:19px;line-height:1.3;margin-bottom:9px}.lead{font-size:19px;color:var(--muted);max-width:68ch}.eyebrow{font:500 11px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--cyan);margin-bottom:16px}.muted{color:var(--muted)}.card{background:linear-gradient(180deg,var(--surface2),var(--surface));border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow)}
+nav{position:sticky;top:0;z-index:50;background:rgba(8,19,29,.9);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}nav .wrap{height:64px;display:flex;align-items:center;justify-content:space-between;gap:28px}.brand{font-weight:700;font-size:14px;text-decoration:none;letter-spacing:.01em}.brand span{color:var(--cyan)}.navlinks{display:flex;align-items:center;gap:24px;font-size:13px;color:var(--muted)}.navlinks a{text-decoration:none}.navlinks a:hover{color:var(--ink)}.navlinks .repo{border:1px solid var(--line);border-radius:8px;padding:8px 12px;color:var(--ink)}@media(max-width:820px){.navlinks a:not(.repo){display:none}}
+.hero{padding:92px 0 72px;border-top:none;background:radial-gradient(circle at 82% 12%,rgba(85,214,217,.11),transparent 25%),linear-gradient(180deg,#0a1722,var(--bg))}.hero-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:56px;align-items:center}.hero .lead{font-size:21px}.hero-note{margin-top:25px;padding:16px 18px;border-left:3px solid var(--cyan);background:rgba(85,214,217,.055);color:#cbd7df;font-size:14px;max-width:70ch}.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:30px}.btn{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;font:500 13px/1 var(--mono);padding:13px 17px;border-radius:9px;border:1px solid var(--line);background:var(--surface);transition:.18s}.btn:hover{transform:translateY(-2px);border-color:var(--cyan)}.btn.primary{background:var(--cyan);border-color:var(--cyan);color:#06141d}.project-panel{padding:26px}.panel-top{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-bottom:18px;border-bottom:1px solid var(--line)}.status{font:500 10px/1 var(--mono);letter-spacing:.09em;text-transform:uppercase;padding:7px 9px;border:1px solid rgba(110,211,168,.34);border-radius:999px;color:var(--green)}.project-panel dl{margin:8px 0 0}.project-panel .row{display:grid;grid-template-columns:125px 1fr;gap:14px;padding:14px 0;border-bottom:1px solid var(--line)}.project-panel .row:last-child{border-bottom:0}.project-panel dt{font:10px/1.4 var(--mono);text-transform:uppercase;letter-spacing:.08em;color:var(--faint)}.project-panel dd{margin:0;font-size:14px;color:#d8e1e8}.stack{display:flex;flex-wrap:wrap;gap:7px}.tag{font:10px/1 var(--mono);border:1px solid var(--line);border-radius:999px;padding:6px 8px;color:var(--muted)}@media(max-width:900px){.hero-grid{grid-template-columns:1fr}.project-panel{max-width:760px}}
+.section-head{display:grid;grid-template-columns:.8fr 1.2fr;gap:52px;align-items:end;margin-bottom:42px}.section-head .lead{justify-self:end}@media(max-width:760px){.section-head{grid-template-columns:1fr;gap:8px}.section-head .lead{justify-self:start}}
+.overview-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}.overview-card{padding:24px}.overview-card .n{font:500 11px/1 var(--mono);color:var(--cyan)}.overview-card p{font-size:14px;color:var(--muted);margin:8px 0 0}@media(max-width:900px){.overview-grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:520px){.overview-grid{grid-template-columns:1fr}}
+.context{background:#0a1722}.context-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px}.context-copy{padding:30px}.context-copy p{color:var(--muted)}.context-fact{padding:30px;display:flex;flex-direction:column;justify-content:space-between}.context-fact strong{font-size:30px;line-height:1.2;letter-spacing:-.025em}.source-row{font:11px/1.6 var(--mono);color:var(--faint);margin-top:24px}.source-row a{color:var(--cyan)}@media(max-width:760px){.context-grid{grid-template-columns:1fr}}
+.architecture{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}.stage{padding:20px;position:relative}.stage:not(:last-child):after{content:'→';position:absolute;right:-11px;top:50%;transform:translateY(-50%);z-index:2;color:var(--faint);font-family:var(--mono)}.stage .step{font:500 10px/1 var(--mono);color:var(--cyan)}.stage h3{font-size:17px;margin-top:14px}.stage p{font-size:13px;color:var(--muted);margin:0}.stage.edge{border-color:rgba(85,214,217,.42)}@media(max-width:900px){.architecture{grid-template-columns:1fr}.stage:not(:last-child):after{content:'↓';right:auto;left:50%;top:auto;bottom:-15px}}
+.data-grid{display:grid;grid-template-columns:1.12fr .88fr;gap:22px;align-items:stretch}.video-card{overflow:hidden}.video-card video{width:100%;height:100%;min-height:480px;object-fit:cover;background:#02070b}.media-caption{padding:18px 20px;border-top:1px solid var(--line)}.media-caption b{display:block}.media-caption span{font-size:13px;color:var(--muted)}.photos{display:grid;grid-template-rows:1fr 1fr;gap:22px}.photo{overflow:hidden;position:relative;min-height:230px}.photo img{width:100%;height:100%;object-fit:cover}.photo figcaption{position:absolute;left:14px;right:14px;bottom:14px;padding:12px 14px;border-radius:10px;background:rgba(5,14,22,.8);border:1px solid rgba(255,255,255,.13);font-size:13px}.dataset-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-top:22px}.dataset-item{padding:18px}.dataset-item b{font-size:14px}.dataset-item span{display:block;font-size:12px;color:var(--muted);margin-top:5px}@media(max-width:850px){.data-grid{grid-template-columns:1fr}.photos{grid-template-columns:1fr 1fr;grid-template-rows:auto}.video-card video{min-height:380px}.dataset-strip{grid-template-columns:repeat(2,1fr)}}@media(max-width:540px){.photos,.dataset-strip{grid-template-columns:1fr}}
+.protocol{background:#0a1722}.protocol-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:17px}.protocol-card{padding:25px}.protocol-card .label{font:500 10px/1 var(--mono);letter-spacing:.09em;text-transform:uppercase;color:var(--amber)}.protocol-card.current .label{color:var(--green)}.protocol-card p{font-size:14px;color:var(--muted);margin:8px 0 0}@media(max-width:750px){.protocol-grid{grid-template-columns:1fr}}
+.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:20px}.metric{padding:24px}.metric small{font:500 10px/1 var(--mono);letter-spacing:.09em;text-transform:uppercase;color:var(--faint)}.metric strong{display:block;font-size:40px;line-height:1;margin:14px 0 7px}.metric:nth-child(1) strong{color:var(--cyan)}.metric:nth-child(2) strong{color:var(--green)}.metric:nth-child(3) strong{color:var(--amber)}.metric span{font-size:13px;color:var(--muted)}.table-card{overflow-x:auto}.table-card table{width:100%;min-width:800px;border-collapse:collapse;font-size:14px}.table-card th,.table-card td{text-align:left;padding:14px 17px;border-bottom:1px solid var(--line)}.table-card th{font:500 10px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}.table-card td{color:var(--muted)}.table-card td:first-child,.table-card td:nth-child(2){color:var(--ink)}.table-card tr.best{background:rgba(85,214,217,.055)}.result-note{font:11px/1.65 var(--mono);color:var(--faint);margin-top:17px}@media(max-width:650px){.metrics{grid-template-columns:1fr}}
+.edge-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}.edge-card{padding:28px}.edge-card p{color:var(--muted)}.checklist{list-style:none;padding:0;margin:20px 0 0}.checklist li{display:flex;justify-content:space-between;gap:20px;padding:12px 0;border-top:1px solid var(--line);font-size:14px;color:var(--muted)}.checklist b{font:500 10px/1 var(--mono);text-transform:uppercase;letter-spacing:.08em;color:var(--green)}.checklist .pending{color:var(--amber)}@media(max-width:700px){.edge-grid{grid-template-columns:1fr}}
+.team-layout{display:grid;grid-template-columns:1fr 1fr;gap:22px}.team-group{padding:28px}.team-group>p{color:var(--muted);font-size:14px}.person{display:grid;grid-template-columns:46px 1fr;gap:15px;padding:18px 0;border-top:1px solid var(--line)}.person:first-of-type{margin-top:20px}.initials{width:46px;height:46px;border-radius:12px;display:grid;place-items:center;background:rgba(85,214,217,.08);border:1px solid rgba(85,214,217,.24);font-weight:700;color:var(--cyan)}.person h3{font-size:16px;margin:0}.role{font:500 10px/1.5 var(--mono);text-transform:uppercase;letter-spacing:.07em;color:var(--faint);margin-top:3px}.person p{font-size:13px;color:var(--muted);margin:7px 0 0}@media(max-width:760px){.team-layout{grid-template-columns:1fr}}
+.sources{padding:30px 0 40px;border-top:1px solid var(--line);font-size:12px;color:var(--faint)}.sources a{color:var(--muted)}footer{padding:28px 0 42px;border-top:1px solid var(--line)}.footer-row{display:flex;justify-content:space-between;gap:24px;font:11px/1.6 var(--mono);color:var(--faint)}@media(max-width:620px){.footer-row{flex-direction:column}}:focus-visible{outline:2px solid var(--amber);outline-offset:4px;border-radius:4px}@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.btn{transition:none}}
+
+/* Live inference demo */
+.demo{background:#0a1722}.demo-shell{display:grid;grid-template-columns:.82fr 1.18fr;gap:22px;align-items:start}.demo-controls,.demo-output{padding:28px}.model-live{display:inline-flex;align-items:center;gap:8px;font:500 10px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--green);margin-bottom:20px}.model-live:before{content:'';width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 0 5px rgba(110,211,168,.1)}.dropzone{border:1px dashed #46627a;border-radius:14px;padding:30px 22px;text-align:center;background:rgba(85,214,217,.025);transition:.18s;cursor:pointer}.dropzone:hover,.dropzone.drag{border-color:var(--cyan);background:rgba(85,214,217,.06)}.dropzone strong{display:block;font-size:17px}.dropzone span{display:block;font-size:13px;color:var(--muted);margin-top:6px}.dropzone input{display:none}.demo-or{display:flex;align-items:center;gap:12px;font:10px/1 var(--mono);text-transform:uppercase;letter-spacing:.09em;color:var(--faint);margin:20px 0}.demo-or:before,.demo-or:after{content:'';height:1px;background:var(--line);flex:1}.sample-buttons{display:grid;grid-template-columns:1fr 1fr;gap:10px}.sample-btn,.record-btn{appearance:none;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:9px;padding:12px 14px;font:500 12px/1.2 var(--mono);cursor:pointer;transition:.18s}.sample-btn:hover,.record-btn:hover{border-color:var(--cyan);transform:translateY(-1px)}.record-btn{width:100%;margin-top:10px}.record-btn.recording{border-color:var(--red);color:var(--red);animation:pulse 1.2s infinite}@keyframes pulse{50%{box-shadow:0 0 0 6px rgba(237,109,133,.08)}}.demo-hint{font-size:12px;color:var(--faint);margin:18px 0 0}.demo-status{font:11px/1.5 var(--mono);color:var(--muted);margin-top:16px;min-height:18px}.demo-status.error{color:var(--red)}.demo-status.busy{color:var(--amber)}.prediction-head{display:flex;justify-content:space-between;gap:20px;align-items:flex-start}.prediction-label small{font:500 10px/1 var(--mono);text-transform:uppercase;letter-spacing:.09em;color:var(--faint)}.prediction-label strong{display:block;font-size:35px;line-height:1.05;margin-top:10px;text-transform:capitalize}.prediction-label strong.drone{color:var(--red)}.prediction-label strong.normal{color:var(--green)}.score-box{text-align:right}.score-box small{font:500 10px/1 var(--mono);text-transform:uppercase;color:var(--faint)}.score-box strong{display:block;font-size:35px;color:var(--cyan);line-height:1;margin-top:10px}.wave-wrap{margin-top:24px;padding:13px;border:1px solid var(--line);border-radius:11px;background:#08131d}.wave-wrap canvas{width:100%;height:95px}.demo-meta{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px}.demo-meta div{border:1px solid var(--line);border-radius:9px;padding:12px}.demo-meta small{display:block;font:9px/1 var(--mono);text-transform:uppercase;letter-spacing:.08em;color:var(--faint)}.demo-meta b{display:block;margin-top:7px;font-size:13px}.timeline-title{display:flex;justify-content:space-between;align-items:center;margin-top:24px}.timeline-title b{font-size:14px}.timeline-title span{font:10px/1 var(--mono);color:var(--faint)}.timeline{display:flex;gap:5px;align-items:flex-end;height:120px;padding:13px;margin-top:10px;border:1px solid var(--line);border-radius:11px;background:#08131d;overflow-x:auto}.seg{flex:1;min-width:18px;border-radius:5px 5px 2px 2px;background:var(--green);position:relative;transition:.2s}.seg.drone{background:var(--red)}.seg:hover:after{content:attr(data-tip);position:absolute;bottom:calc(100% + 7px);left:50%;transform:translateX(-50%);white-space:nowrap;background:#02080d;border:1px solid var(--line);padding:6px 7px;border-radius:6px;font:9px/1 var(--mono);z-index:3}.audio-preview{width:100%;margin-top:16px;height:38px}.demo-note{font-size:12px;color:var(--faint);margin:16px 0 0}.deploy-result{margin-top:22px;padding:24px}.deploy-result-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-top:18px}.deploy-result-grid div{padding:15px;border:1px solid var(--line);border-radius:10px;background:#0a1722}.deploy-result-grid small{display:block;font:9px/1 var(--mono);text-transform:uppercase;color:var(--faint)}.deploy-result-grid strong{display:block;font-size:20px;margin-top:9px}.person-link{text-decoration:none}.person-link:hover{color:var(--cyan)}.team-layout.three{grid-template-columns:repeat(3,1fr)}.support-note{font-size:12px;color:var(--faint)}
+@media(max-width:900px){.demo-shell{grid-template-columns:1fr}.deploy-result-grid{grid-template-columns:repeat(3,1fr)}.team-layout.three{grid-template-columns:1fr}}
+@media(max-width:580px){.sample-buttons{grid-template-columns:1fr}.demo-meta{grid-template-columns:1fr 1fr}.deploy-result-grid{grid-template-columns:1fr 1fr}.demo-controls,.demo-output{padding:21px}.prediction-label strong,.score-box strong{font-size:29px}}
+</style>
+</head>
+<body>
+<nav><div class="wrap"><a class="brand" href="#top">RMOT <span>/</span> Acoustic UAV Detection</a><div class="navlinks"><a href="#overview">Overview</a><a href="#method">Method</a><a href="#data">Data</a><a href="#demo">Live demo</a><a href="#results">Results</a><a href="#team">Team</a><a class="repo" href="https://github.com/roeiyanku/UAV_Sound_Classification_Project" rel="noopener noreferrer" target="_blank">GitHub ↗</a></div></div></nav>
+<header class="hero" id="top"><div class="wrap hero-grid"><div><div class="eyebrow">Computer Science Final Project · RMOT</div><h1>Acoustic UAV Detection on Edge Devices</h1><p class="lead">A research prototype for detecting low-flying UAVs from real-world audio using pretrained representations, anomaly-detection models, and a compact TinyML deployment branch.</p><div class="hero-note"><b>Research objective:</b> evaluate whether a detector can recognize UAV acoustics beyond the exact recordings and drone types used during training, while remaining practical for local edge inference.</div><div class="actions"><a class="btn primary" href="#demo">Try the live model</a><a class="btn" href="#results">View current results</a><a class="btn" href="#data">Watch field recording</a></div></div><aside class="project-panel card"><div class="panel-top"><div><b>Project status</b><div class="muted" style="font-size:13px;margin-top:4px">Model trained, quantized, and available for live inference</div></div><span class="status">Validated</span></div><dl><div class="row"><dt>Input</dt><dd>One-second, 16 kHz audio windows</dd></div><div class="row"><dt>Current corpus</dt><dd>11,704 labeled WAV files across drone and non-drone sources</dd></div><div class="row"><dt>Deployable model</dt><dd>7,350-parameter mini-SE-Net · full-int8 TFLite</dd></div><div class="row"><dt>Model footprint</dt><dd>22.6 KB · 1.32 ms per one-second window in TFLite benchmark</dd></div><div class="row"><dt>Technology</dt><dd><div class="stack"><span class="tag">Python</span><span class="tag">PyTorch</span><span class="tag">TensorFlow</span><span class="tag">AST</span><span class="tag">YAMNet</span><span class="tag">TFLite</span></div></dd></div></dl></aside></div></header>
+<section id="overview"><div class="wrap"><div class="section-head"><div><div class="eyebrow">Project overview</div><h2>One technical question, evaluated from several angles.</h2></div><p class="lead">The project combines field data, public audio corpora, representation learning, anomaly detection, and deployment constraints rather than treating accuracy as the only goal.</p></div><div class="overview-grid"><article class="overview-card card"><div class="n">01 / PROBLEM</div><h3>Low-flying UAV detection</h3><p>Explore acoustic sensing as an additional local warning layer near personnel and infrastructure.</p></article><article class="overview-card card"><div class="n">02 / GENERALIZATION</div><h3>Unseen conditions</h3><p>Measure performance across recording sessions, devices, background sounds, and ultimately held-out drone types.</p></article><article class="overview-card card"><div class="n">03 / MODELLING</div><h3>Multiple approaches</h3><p>Compare pretrained audio embeddings, metric learning, one-class models, CNNs, and teacher–student methods.</p></article><article class="overview-card card"><div class="n">04 / DEPLOYMENT</div><h3>Edge constraints</h3><p>Track model size, quantization, inference latency, and the cost of feature extraction—not only classifier speed.</p></article></div></div></section>
+<section class="context"><div class="wrap"><div class="section-head"><div><div class="eyebrow">Operational motivation</div><h2>Why acoustic sensing is worth investigating.</h2></div><p class="lead">Recent UAV attacks and reconnaissance missions on Israel’s northern front demonstrated the difficulty of detecting small, low-flying aircraft consistently. The project studies microphones as a complementary sensor, not as a replacement for radar or air defense.</p></div><div class="context-grid"><article class="context-copy card"><h3>Passive and local</h3><p>An acoustic sensor does not transmit energy, can operate close to the protected area, and may continue processing without a permanent cloud connection. Its value would be highest when fused with other sensing modalities.</p></article><article class="context-fact card"><div><div class="eyebrow" style="margin-bottom:12px;color:var(--red)">Documented example</div><strong>In October 2024, a Hezbollah UAV struck an IDF training base near Binyamina, killing four soldiers and wounding more than 60.</strong></div><div class="source-row">Context: <a href="https://apnews.com/article/a8cd5df3e2bb4ab08405a78251244bb2" rel="noopener noreferrer" target="_blank">Associated Press ↗</a></div></article></div></div></section>
+<section id="method"><div class="wrap"><div class="section-head"><div><div class="eyebrow">System design</div><h2>From field audio to a detection score.</h2></div><p class="lead">Each stage is separated so datasets, representations, detectors, and deployment models can be compared independently.</p></div><div class="architecture"><article class="stage card"><div class="step">01</div><h3>Ingest</h3><p>Assemble internal and public UAV, background, machinery, and aircraft audio.</p></article><article class="stage card"><div class="step">02</div><h3>Prepare</h3><p>Label events, segment recordings, normalize sample rates, and define train/validation/test splits.</p></article><article class="stage card"><div class="step">03</div><h3>Represent</h3><p>Extract AST, Wav2Vec2, YAMNet, log-mel, and raw-waveform representations.</p></article><article class="stage card"><div class="step">04</div><h3>Detect</h3><p>Train Isolation Forest, One-Class SVM, logistic regression, CNN, and experimental teacher–student models.</p></article><article class="stage edge card"><div class="step">05</div><h3>Deploy</h3><p>Quantize a compact mini-SE-Net and measure real edge-device cost.</p></article></div></div></section>
+<section id="data"><div class="wrap"><div class="section-head"><div><div class="eyebrow">Dataset and fieldwork</div><h2>Real recordings are part of the experiment.</h2></div><p class="lead">Outdoor UAV audio changes with distance, flight path, wind, terrain, microphone placement, and background activity. The field sessions help expose those domain shifts.</p></div><div class="data-grid"><figure class="video-card card" style="margin:0"><video controls="" playsinline="" poster="assets/field-recording-poster.jpg" preload="metadata"><source src="assets/field-recording-session.mp4" type="video/mp4"/>Your browser does not support embedded video.</video><figcaption class="media-caption"><b>Example recording session</b><span>Outdoor UAV flight with multiple recording devices used to build and validate the acoustic dataset.</span></figcaption></figure><div class="photos"><figure class="photo card" style="margin:0"><img alt="Recording equipment used during an outdoor UAV audio experiment" src="assets/equipment.jpg"/><figcaption>Multiple devices and microphone configurations</figcaption></figure><figure class="photo card" style="margin:0"><img alt="Drone flying during an outdoor acoustic recording session" src="assets/drone-field.jpg"/><figcaption>Real flight distance and environmental noise</figcaption></figure></div></div><div class="dataset-strip"><div class="dataset-item card"><b>Internal field recordings</b><span>Real UAV flights and background intervals</span></div><div class="dataset-item card"><b>Public drone audio</b><span>Additional drone models and recording conditions</span></div><div class="dataset-item card"><b>MIMII</b><span>Machinery as difficult non-drone audio</span></div><div class="dataset-item card"><b>AeroSonicDB</b><span>Crewed aircraft as acoustic confusers</span></div><div class="dataset-item card"><b>Environmental background</b><span>Ordinary outdoor sound without UAV activity</span></div></div></div></section><section class="demo" id="demo"><div class="wrap">
+<div class="section-head"><div><div class="eyebrow">Live model demo</div><h2>Upload audio and run the exported int8 model locally.</h2></div><p class="lead">This is real on-device browser inference using the saved 22.6 KB mini-SE-Net model. Longer recordings are analyzed as consecutive one-second windows so you can see exactly where the model reacts.</p></div>
+<div class="demo-shell">
+<article class="demo-controls card">
+<div class="model-live" id="modelLive">Loading browser model…</div>
+<h3>Choose an audio recording</h3>
+<p class="muted" style="font-size:14px">WAV, MP3, M4A, MP4, or a browser microphone recording. Up to 60 seconds are analyzed.</p>
+<label class="dropzone" id="dropzone"><input accept="audio/*,video/mp4,video/quicktime" id="audioFile" type="file"/><strong>Drop a file here or browse</strong><span>The server resamples it to mono 16 kHz and runs the exact training-time normalization.</span></label>
+<div class="demo-or">or test a known example</div>
+<div class="sample-buttons"><button class="sample-btn" data-name="drone-example.wav" data-sample="assets/demo-drone.wav" type="button">▶ Drone example</button><button class="sample-btn" data-name="normal-example.wav" data-sample="assets/demo-normal.wav" type="button">▶ Normal example</button></div>
+<button class="record-btn" id="recordBtn" type="button">● Record from microphone</button>
+<p class="demo-hint">The model expects one-second windows. For multi-second audio, the overall decision uses the highest drone score while the chart preserves every window.</p>
+<div class="demo-status" id="demoStatus">Select an example or upload your own recording.</div>
+</article>
+<article aria-live="polite" class="demo-output card">
+<div class="prediction-head"><div class="prediction-label"><small>Prediction</small><strong id="predictionLabel">Waiting for audio</strong></div><div class="score-box"><small>Peak drone score</small><strong id="predictionScore">—</strong></div></div>
+<div class="wave-wrap"><canvas aria-label="Audio waveform" height="120" id="waveCanvas" width="760"></canvas></div>
+<audio class="audio-preview" controls="" hidden="" id="audioPreview"></audio>
+<div class="demo-meta"><div><small>Peak window</small><b id="peakWindow">—</b></div><div><small>Windows</small><b id="windowCount">—</b></div><div><small>Duration</small><b id="audioDuration">—</b></div><div><small>Inference</small><b id="inferenceTime">—</b></div></div>
+<div class="timeline-title"><b>One-second detection timeline</b><span>green = normal · red = drone</span></div><div class="timeline" id="scoreTimeline"><span class="muted" style="font-size:13px;align-self:center">Scores will appear here.</span></div>
+<p class="demo-note">Research prototype. The displayed score is the model’s quantized softmax output, not an operational threat assessment. Current published metrics use the saved random clip-level test split.</p>
+</article>
+</div>
+</div></section>
+<section class="protocol" id="evaluation"><div class="wrap"><div class="section-head"><div><div class="eyebrow">Evaluation protocol</div><h2>Preliminary model selection is not the final claim.</h2></div><p class="lead">The current results identify promising representations. A stricter experiment is required before claiming robust detection of an unseen UAV.</p></div><div class="protocol-grid"><article class="protocol-card current card"><div class="label">Completed</div><h3>Random clip comparison</h3><p>Used to screen model combinations, but neighboring clips from the same source may appear across splits.</p></article><article class="protocol-card card"><div class="label">Next</div><h3>Recording-session split</h3><p>All clips from one complete session remain in a single split to reduce source and temporal leakage.</p></article><article class="protocol-card card"><div class="label">Target</div><h3>Leave-one-drone-out</h3><p>A complete drone type, recording session, device, and unseen negative categories are reserved for final testing.</p></article></div></div></section>
+<section id="results"><div class="wrap"><div class="section-head"><div><div class="eyebrow">Current results</div><h2>Triplet adaptation produced the strongest preliminary separation.</h2></div><p class="lead">Base pretrained embeddings performed poorly on the minority drone class. Metric-learning adaptation substantially improved the current random-split result.</p></div><div class="metrics"><article class="metric card"><small>ROC AUC</small><strong>0.9996</strong><span>AST triplet + Isolation Forest</span></article><article class="metric card"><small>Drone recall</small><strong>1.000</strong><span>100 of 100 drone test clips detected</span></article><article class="metric card"><small>Drone F1</small><strong>0.806</strong><span>Precision 0.676 · recall 1.000</span></article></div><div class="table-card card"><table><thead><tr><th>Representation</th><th>Detector</th><th>Accuracy</th><th>Drone recall</th><th>Drone F1</th><th>AUC</th></tr></thead><tbody><tr class="best"><td>AST + triplet</td><td>Isolation Forest</td><td>0.973</td><td>1.000</td><td>0.806</td><td>0.9996</td></tr><tr><td>YAMNet + triplet</td><td>Isolation Forest</td><td>0.957</td><td>0.950</td><td>0.714</td><td>0.9919</td></tr><tr><td>AST + triplet</td><td>One-Class SVM</td><td>0.909</td><td>1.000</td><td>0.556</td><td>0.9996</td></tr><tr><td>YAMNet + triplet</td><td>One-Class SVM</td><td>0.903</td><td>0.980</td><td>0.536</td><td>0.9884</td></tr><tr><td>AST base</td><td>Isolation Forest</td><td>0.902</td><td>0.010</td><td>0.011</td><td>0.5461</td></tr></tbody></table></div><article class="deploy-result card"><div class="eyebrow" style="margin-bottom:10px">Deployable TinyML model</div><h3>mini-SE-Net · raw waveform · full-int8 TFLite</h3><p class="muted" style="font-size:14px">A separate compact model is trained directly on one-second waveforms and powers the live demo above.</p><div class="deploy-result-grid"><div><small>AUC</small><strong>0.9950</strong></div><div><small>Accuracy</small><strong>0.9784</strong></div><div><small>Drone recall</small><strong>0.870</strong></div><div><small>Drone F1</small><strong>0.821</strong></div><div><small>Model size</small><strong>22.6 KB</strong></div><div><small>TFLite latency</small><strong>1.32 ms</strong></div></div></article><p class="result-note">PRELIMINARY · random clip-level split · 1,756 test clips (100 drone, 1,656 normal) · classifier timing excludes pretrained feature extraction · these values do not yet demonstrate leave-one-drone-out generalization.</p></div></section>
+<section id="edge"><div class="wrap"><div class="section-head"><div><div class="eyebrow">Edge deployment</div><h2>The compact branch is trained, quantized, and running directly in the browser.</h2></div><p class="lead">The mini-SE-Net consumes one second of mono 16 kHz audio directly, avoiding a large pretrained feature extractor in the deployment path.</p></div><div class="edge-grid"><article class="edge-card card"><h3>Validated model artifact</h3><p>The exported model is a full-int8 TFLite network with 7,350 trainable parameters and a 22.6 KB file footprint.</p><ul class="checklist"><li><span>Raw waveform input</span><b>16,000 samples</b></li><li><span>Quantized test accuracy</span><b>97.84%</b></li><li><span>Drone recall / F1</span><b>0.87 / 0.821</b></li><li><span>ROC AUC</span><b>0.9950</b></li></ul></article><article class="edge-card card"><h3>Deployment measurements</h3><p>The saved TFLite benchmark averaged 1.32 ms per one-second sample in the notebook environment. The model is now exposed through the browser with no server upload.</p><ul class="checklist"><li><span>TFLite model size</span><b>22.6 KB</b></li><li><span>Parameters</span><b>7,350</b></li><li><span>Browser inference</span><b>Live</b></li><li><span>Physical MCU benchmark</span><b class="pending">Next step</b></li></ul></article></div></div></section>
+<section id="team"><div class="wrap"><div class="section-head"><div><div class="eyebrow">Team structure</div><h2>Leadership, implementation, and laboratory support.</h2></div><p class="lead">Roles are described according to how the project was organized and executed in practice.</p></div><div class="team-layout three"><article class="team-group card"><h3>Leadership and oversight</h3><p>Direction, coordination, and accountability.</p><div class="person"><div class="initials">TK</div><div><h3><a class="person-link" href="https://www.linkedin.com/in/tal-kfir-266302238/" rel="noopener noreferrer" target="_blank">Tal Kfir ↗</a></h3><div class="role">Team Lead</div><p>Project coordination, work planning, task assignment, and milestone tracking.</p></div></div><div class="person"><div class="initials">OA</div><div><h3><a class="person-link" href="https://www.linkedin.com/in/or-anidjar-ph-d-6828a068/" rel="noopener noreferrer" target="_blank">Or Anidjar ↗</a></h3><div class="role">Project Oversight</div><p>Overall responsibility, high-level direction, and project-level oversight.</p></div></div></article><article class="team-group card"><h3>Core implementation</h3><p>Hands-on execution across data, models, experiments, and documentation.</p><div class="person"><div class="initials">RY</div><div><h3><a class="person-link" href="https://www.linkedin.com/in/roei-yanku/" rel="noopener noreferrer" target="_blank">Roei Yanku ↗</a></h3><div class="role">ML and Audio Engineering</div><p>Audio pipeline, feature extraction, model training, experiment integration, TinyML export, and live-demo implementation.</p></div></div><div class="person"><div class="initials">ML</div><div><h3><a class="person-link" href="https://www.linkedin.com/in/melissa-liebowitz-2za45/" rel="noopener noreferrer" target="_blank">Melissa Liebowitz ↗</a></h3><div class="role">Research and Experimentation</div><p>Field data collection, experiment execution, evaluation support, research, and project documentation.</p></div></div></article><article class="team-group card"><h3>Academic and laboratory support</h3><p>Research infrastructure and practical field support.</p><div class="person"><div class="initials">BB</div><div><h3><a class="person-link" href="https://www.linkedin.com/in/boaz-ben-moshe-7a23b915/" rel="noopener noreferrer" target="_blank">Boaz Ben-Moshe ↗</a></h3><div class="role">Laboratory and Field Support</div><p>Provided access to the research laboratory and DJI platforms, and supported the team throughout data collection and experimental work.</p></div></div><p class="support-note">Acknowledged for enabling the equipment, environment, and practical support required for the field sessions.</p></article></div><div class="actions"><a class="btn primary" href="https://github.com/roeiyanku/UAV_Sound_Classification_Project" rel="noopener noreferrer" target="_blank">View repository ↗</a><a class="btn" href="#demo">Run the model</a></div></div></section>
+<div class="sources"><div class="wrap"><b>Operational-context references:</b> <a href="https://apnews.com/article/a8cd5df3e2bb4ab08405a78251244bb2" rel="noopener noreferrer" target="_blank">Associated Press, 13 Oct 2024</a> · <a href="https://www.reuters.com/world/middle-east/pagers-drones-how-hezbollah-aims-counter-israels-high-tech-surveillance-2024-07-09/" rel="noopener noreferrer" target="_blank">Reuters, 9 Jul 2024</a>. External reporting is provided only as project motivation.</div></div>
+<footer><div class="wrap footer-row"><span>Acoustic UAV Detection on Edge Devices · RMOT Final Project</span><span>Academic research prototype · not an operational IDF system and not affiliated with the IDF</span></div></footer>
+<script src="./vendor/tfjs/tf-core.min.js"></script>
+<script src="./vendor/tfjs/tf-backend-cpu.min.js"></script>
+<script src="./vendor/tflite/tf-tflite.min.js"></script>
+<script>
+(() => {
+  const SAMPLE_RATE = 16000;
+  const CLIP_SAMPLES = 16000;
+  const MAX_SECONDS = 60;
+  const THRESHOLD = 0.5;
+  const INPUT_SCALE = 0.007843137718737125;
+  const INPUT_ZERO_POINT = -1;
+  const OUTPUT_SCALE = 0.00390625;
+  const OUTPUT_ZERO_POINT = -128;
+
+  const fileInput = document.getElementById('audioFile');
+  const dropzone = document.getElementById('dropzone');
+  const status = document.getElementById('demoStatus');
+  const label = document.getElementById('predictionLabel');
+  const score = document.getElementById('predictionScore');
+  const timeline = document.getElementById('scoreTimeline');
+  const audioPreview = document.getElementById('audioPreview');
+  const canvas = document.getElementById('waveCanvas');
+  const recordBtn = document.getElementById('recordBtn');
+  const modelLive = document.getElementById('modelLive');
+
+  let currentObjectUrl = null;
+  let recorder = null;
+  let recordingStream = null;
+  let recordingChunks = [];
+  let tfliteModel = null;
+  let modelPromise = null;
+
+  function setStatus(message, kind='') {
+    status.textContent = message;
+    status.className = `demo-status ${kind}`.trim();
+  }
+
+  function drawWaveform(data) {
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const width = canvas.width, height = canvas.height, mid = height / 2;
+    const step = Math.max(1, Math.floor(data.length / width));
+    ctx.strokeStyle = '#55d6d9';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    for (let x = 0; x < width; x++) {
+      let min = 1, max = -1;
+      const begin = x * step;
+      const stop = Math.min(begin + step, data.length);
+      for (let i = begin; i < stop; i++) {
+        min = Math.min(min, data[i]);
+        max = Math.max(max, data[i]);
+      }
+      ctx.moveTo(x, mid + min * mid * .86);
+      ctx.lineTo(x, mid + max * mid * .86);
+    }
+    ctx.stroke();
+  }
+
+  function showAudio(file) {
+    if (currentObjectUrl) URL.revokeObjectURL(currentObjectUrl);
+    currentObjectUrl = URL.createObjectURL(file);
+    audioPreview.src = currentObjectUrl;
+    audioPreview.hidden = false;
+  }
+
+  function mixToMono(audioBuffer) {
+    const length = audioBuffer.length;
+    const mono = new Float32Array(length);
+    for (let channel = 0; channel < audioBuffer.numberOfChannels; channel++) {
+      const samples = audioBuffer.getChannelData(channel);
+      for (let i = 0; i < length; i++) mono[i] += samples[i] / audioBuffer.numberOfChannels;
+    }
+    return mono;
+  }
+
+  function resampleLinear(input, sourceRate, targetRate) {
+    if (sourceRate === targetRate) return input;
+    const outputLength = Math.max(1, Math.round(input.length * targetRate / sourceRate));
+    const output = new Float32Array(outputLength);
+    const ratio = sourceRate / targetRate;
+    for (let i = 0; i < outputLength; i++) {
+      const position = i * ratio;
+      const left = Math.floor(position);
+      const right = Math.min(left + 1, input.length - 1);
+      const fraction = position - left;
+      output[i] = input[left] * (1 - fraction) + input[right] * fraction;
+    }
+    return output;
+  }
+
+  async function decodeAudio(file) {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtx) throw new Error('Web Audio is not supported in this browser.');
+    const audioCtx = new AudioCtx();
+    try {
+      const buffer = await audioCtx.decodeAudioData((await file.arrayBuffer()).slice(0));
+      const mono = mixToMono(buffer);
+      const resampled = resampleLinear(mono, buffer.sampleRate, SAMPLE_RATE);
+      return resampled.slice(0, MAX_SECONDS * SAMPLE_RATE);
+    } catch (error) {
+      throw new Error('Could not decode this audio format. Try WAV, MP3, M4A, or a Chrome microphone recording.');
+    } finally {
+      await audioCtx.close();
+    }
+  }
+
+  async function loadModel() {
+    if (tfliteModel) return tfliteModel;
+    if (modelPromise) return modelPromise;
+    modelPromise = (async () => {
+      modelLive.textContent = 'Loading browser model…';
+      await tf.setBackend('cpu');
+      await tf.ready();
+      tflite.setWasmPath('./vendor/tflite/wasm/');
+      const model = await tflite.loadTFLiteModel('./model/model_int8.tflite', {numThreads: 1});
+      tfliteModel = model;
+      modelLive.textContent = 'mini-SE-Net int8 · browser model ready';
+      return model;
+    })().catch(error => {
+      modelPromise = null;
+      modelLive.textContent = 'Browser model failed to load';
+      modelLive.style.color = '#efb45c';
+      throw error;
+    });
+    return modelPromise;
+  }
+
+  function quantizeClip(clip) {
+    let peak = 0;
+    for (let i = 0; i < clip.length; i++) peak = Math.max(peak, Math.abs(clip[i]));
+    const quantized = new Int32Array(CLIP_SAMPLES);
+    for (let i = 0; i < CLIP_SAMPLES; i++) {
+      const normalized = peak > 0 ? clip[i] / peak : clip[i];
+      const value = Math.round(normalized / INPUT_SCALE + INPUT_ZERO_POINT);
+      quantized[i] = Math.max(-128, Math.min(127, value));
+    }
+    return quantized;
+  }
+
+  function predictClip(model, clip) {
+    const quantized = quantizeClip(clip);
+    const inputTensor = tf.tensor(quantized, [1, CLIP_SAMPLES, 1], 'int32');
+    let outputTensor;
+    try {
+      outputTensor = model.predict(inputTensor);
+      const raw = outputTensor.dataSync();
+      const droneScore = Math.max(0, Math.min(1, (raw[0] - OUTPUT_ZERO_POINT) * OUTPUT_SCALE));
+      const normalScore = Math.max(0, Math.min(1, (raw[1] - OUTPUT_ZERO_POINT) * OUTPUT_SCALE));
+      return [droneScore, normalScore];
+    } finally {
+      inputTensor.dispose();
+      if (outputTensor && typeof outputTensor.dispose === 'function') outputTensor.dispose();
+    }
+  }
+
+  async function analyze(audio) {
+    const model = await loadModel();
+    const started = performance.now();
+    const segments = [];
+    for (let start = 0; start < audio.length; start += CLIP_SAMPLES) {
+      const actualSamples = Math.min(CLIP_SAMPLES, audio.length - start);
+      const clip = new Float32Array(CLIP_SAMPLES);
+      clip.set(audio.subarray(start, start + actualSamples));
+      const [droneScore, normalScore] = predictClip(model, clip);
+      segments.push({
+        index: segments.length,
+        start_s: start / SAMPLE_RATE,
+        end_s: (start + actualSamples) / SAMPLE_RATE,
+        drone_score: droneScore,
+        normal_score: normalScore,
+        label: droneScore >= THRESHOLD ? 'drone' : 'normal'
+      });
+      await new Promise(resolve => setTimeout(resolve, 0));
+    }
+    if (!segments.length) throw new Error('No audio samples were decoded.');
+    const peakSegment = segments.reduce((best, item) => item.drone_score > best.drone_score ? item : best);
+    const inferenceMs = performance.now() - started;
+    return {
+      label: peakSegment.drone_score >= THRESHOLD ? 'drone' : 'normal',
+      drone_score: peakSegment.drone_score,
+      peak_start_s: peakSegment.start_s,
+      duration_s: audio.length / SAMPLE_RATE,
+      segments_analyzed: segments.length,
+      drone_segments: segments.filter(item => item.label === 'drone').length,
+      inference_ms_total: inferenceMs,
+      segments
+    };
+  }
+
+  function renderResult(data) {
+    label.textContent = data.label === 'drone' ? 'UAV detected' : 'No UAV detected';
+    label.className = data.label;
+    score.textContent = `${(data.drone_score * 100).toFixed(1)}%`;
+    document.getElementById('peakWindow').textContent = `${data.peak_start_s.toFixed(1)}–${(data.peak_start_s + 1).toFixed(1)} s`;
+    document.getElementById('windowCount').textContent = `${data.drone_segments} / ${data.segments_analyzed} flagged`;
+    document.getElementById('audioDuration').textContent = `${data.duration_s.toFixed(2)} s`;
+    document.getElementById('inferenceTime').textContent = `${data.inference_ms_total.toFixed(1)} ms`;
+    timeline.innerHTML = '';
+    data.segments.forEach(seg => {
+      const bar = document.createElement('div');
+      bar.className = `seg ${seg.label}`;
+      bar.style.height = `${Math.max(8, seg.drone_score * 100)}%`;
+      bar.dataset.tip = `${seg.start_s.toFixed(1)}s · drone ${(seg.drone_score * 100).toFixed(1)}%`;
+      timeline.appendChild(bar);
+    });
+  }
+
+  async function runFile(file) {
+    if (!file) return;
+    showAudio(file);
+    setStatus(`Decoding ${file.name} and running local int8 inference…`, 'busy');
+    label.textContent = 'Analyzing…';
+    label.className = '';
+    score.textContent = '—';
+    try {
+      const audio = await decodeAudio(file);
+      drawWaveform(audio);
+      const result = await analyze(audio);
+      renderResult(result);
+      setStatus(`Finished locally: ${result.segments_analyzed} one-second window${result.segments_analyzed === 1 ? '' : 's'} analyzed. Audio was not uploaded.`);
+    } catch (error) {
+      console.error(error);
+      setStatus(error.message || 'Could not run browser inference.', 'error');
+      label.textContent = 'Inference unavailable';
+      score.textContent = '—';
+    }
+  }
+
+  fileInput.addEventListener('change', () => runFile(fileInput.files[0]));
+  ['dragenter', 'dragover'].forEach(type => dropzone.addEventListener(type, event => {
+    event.preventDefault();
+    dropzone.classList.add('drag');
+  }));
+  ['dragleave', 'drop'].forEach(type => dropzone.addEventListener(type, event => {
+    event.preventDefault();
+    dropzone.classList.remove('drag');
+  }));
+  dropzone.addEventListener('drop', event => runFile(event.dataTransfer.files[0]));
+
+  document.querySelectorAll('[data-sample]').forEach(button => button.addEventListener('click', async () => {
+    setStatus('Loading the example…', 'busy');
+    try {
+      const response = await fetch(button.dataset.sample);
+      if (!response.ok) throw new Error('Example file not found.');
+      const blob = await response.blob();
+      await runFile(new File([blob], button.dataset.name, {type: blob.type || 'audio/wav'}));
+    } catch (error) {
+      setStatus(error.message || 'Could not load the example.', 'error');
+    }
+  }));
+
+  recordBtn.addEventListener('click', async () => {
+    if (recorder && recorder.state === 'recording') {
+      recorder.stop();
+      return;
+    }
+    if (!navigator.mediaDevices || !window.MediaRecorder) {
+      setStatus('Microphone recording is not supported in this browser.', 'error');
+      return;
+    }
+    try {
+      recordingStream = await navigator.mediaDevices.getUserMedia({audio: true});
+      recordingChunks = [];
+      const preferred = MediaRecorder.isTypeSupported('audio/webm;codecs=opus') ? 'audio/webm;codecs=opus' : '';
+      recorder = preferred ? new MediaRecorder(recordingStream, {mimeType: preferred}) : new MediaRecorder(recordingStream);
+      recorder.ondataavailable = event => { if (event.data.size) recordingChunks.push(event.data); };
+      recorder.onstop = async () => {
+        recordingStream.getTracks().forEach(track => track.stop());
+        recordBtn.textContent = '● Record from microphone';
+        recordBtn.classList.remove('recording');
+        const blob = new Blob(recordingChunks, {type: recorder.mimeType || 'audio/webm'});
+        await runFile(new File([blob], 'microphone-recording.webm', {type: blob.type}));
+      };
+      recorder.start();
+      recordBtn.textContent = '■ Stop and analyze';
+      recordBtn.classList.add('recording');
+      setStatus('Recording… press stop when the sample is ready.', 'busy');
+    } catch (error) {
+      setStatus('Microphone permission was denied or unavailable.', 'error');
+    }
+  });
+
+  loadModel().catch(error => {
+    console.error('Model initialization failed:', error);
+    setStatus('The browser model could not be loaded. Check the browser console.', 'error');
+  });
+})();
+</script></body>
+</html>
