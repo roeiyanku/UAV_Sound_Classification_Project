@@ -1,0 +1,27 @@
+name: Apply live demo fix
+
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  contents: write
+
+jobs:
+  patch-demo:
+    if: github.event.issue.title == 'Apply prepared live demo fix'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch demo
+        run: python3 scripts/patch_demo.py
+      - name: Validate and commit
+        run: |
+          grep -q "const UAV_THRESHOLD = 0.70" docs/index.html
+          grep -q "Uncertain result" docs/index.html
+          grep -q "amber = uncertain" docs/index.html
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/index.html
+          git commit -m "Fix live demo confidence and audio window handling"
+          git push
