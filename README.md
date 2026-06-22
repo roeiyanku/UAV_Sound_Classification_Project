@@ -9,6 +9,9 @@ A smaller part of the project explores whether a compact model can later be depl
 **Project website and experimental demo:**
 [roeiyanku.github.io/UAV_Sound_Classification_Project](https://roeiyanku.github.io/UAV_Sound_Classification_Project/)
 
+**Dataset sources:**
+[GitHub dataset list](DATASETS.md) · [Website dataset page](https://roeiyanku.github.io/UAV_Sound_Classification_Project/datasets/)
+
 ---
 
 ## Research Question
@@ -145,27 +148,27 @@ During inference, a large difference between the teacher and student outputs may
 
 The project uses several datasets to compare performance under different conditions.
 
-### Multiclass Drone Audio
+### [Multiclass Drone Audio](https://github.com/saraalemadi/DroneAudioDataset)
 
 Contains UAV recordings together with multiple background sound categories.
 
 It is currently the strongest dataset in the experiments.
 
-### Binary Drone Audio
+### [Binary Drone Audio](https://www.kaggle.com/datasets/amineipad/drone-sound-audio-detection)
 
 Contains drone and non-drone recordings.
 
 The current experimental run produced inconsistent results and needs to be rerun before drawing conclusions.
 
-### AeroSonicDB
+### [AeroSonicDB](https://www.kaggle.com/datasets/gray8ed/audio-dataset-of-low-flying-aircraft-aerosonicdb)
 
 Contains aircraft and environmental recordings.
 
 It is used to test whether methods that perform well on drone datasets also transfer to different aerial sounds.
 
-### MIMII
+### [MIMII](https://zenodo.org/records/3384388)
 
-An industrial machine-sound dataset used as an additional anomaly-detection benchmark.
+An industrial machine-sound dataset used as an additional anomaly-detection benchmark. The reported experiment currently uses the slider subset.
 
 For example, a detector can learn normal machine operation and identify abnormal sounds.
 
@@ -173,7 +176,9 @@ For example, a detector can learn normal machine operation and identify abnormal
 
 The project also uses real-world recordings collected with multiple microphones and DJI UAV platforms.
 
-These recordings require manual alignment, labeling, segmentation, and quality checking.
+These recordings require manual alignment, labeling, segmentation, and quality checking. They were collected by the project team and are not publicly distributed.
+
+The public datasets remain subject to their original licenses and terms of use. This repository does not redistribute the complete datasets.
 
 ---
 
