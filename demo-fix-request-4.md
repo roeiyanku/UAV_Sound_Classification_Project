@@ -1,1 +1,0 @@
-Demo patch execution marker.
