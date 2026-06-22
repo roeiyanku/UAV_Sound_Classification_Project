@@ -1,66 +1,179 @@
-# UAV Sound Classification Pipeline
+# UAV Sound Detection and Anomaly-Detection Research
 
-An audio machine-learning project for detecting and classifying **UAV/drone sounds in real-world recordings**.
+A research project investigating how UAVs and other unmanned aircraft can be detected from real-world audio recordings.
 
-The project compares several supervised and anomaly-detection approaches:
+The project compares multiple audio representations, supervised classifiers, anomaly-detection methods, and evaluation strategies. Its main research goal is to determine whether a system can detect UAV sounds under noisy conditions, including UAV types and recording environments that were not present during training.
 
-* CNN on log-mel spectrograms
-* AST embeddings with Logistic Regression
-* Wav2Vec2 embeddings with Logistic Regression
-* One-Class SVM
-* Isolation Forest
-* Teacher-Student anomaly detection
+A smaller part of the project explores whether a compact model can later be deployed on edge hardware.
 
-The pipeline was organized with an emphasis on clean and maintainable code:
-
-* Clear notebook sections
-* Shared configuration values
-* Reusable helper functions
-* Meaningful variable names
-* Separation between preprocessing, training, and evaluation
+**Project website and experimental demo:**
+[roeiyanku.github.io/UAV_Sound_Classification_Project](https://roeiyanku.github.io/UAV_Sound_Classification_Project/)
 
 ---
 
-## Project Goals
+## Research Question
 
-The main goal is to compare different machine-learning approaches for detecting UAV sounds in noisy, real-world audio recordings.
+A standard binary classifier learns:
 
-The project focuses on:
+```text
+Known UAV sounds vs. known background sounds
+```
 
-* Processing and segmenting raw audio recordings
-* Extracting meaningful audio features
-* Distinguishing UAV sounds from background noise
-* Comparing supervised and anomaly-detection models
-* Evaluating all models with consistent metrics
-* Building a readable and reusable training pipeline
+This can work well when the test recordings are similar to the training data.
+
+The more difficult goal is:
+
+> Can a model learn normal environmental audio and detect an unfamiliar UAV as an unusual sound?
+
+This is why the project compares both supervised classification and anomaly-detection approaches.
 
 ---
 
-## Models Included
+## Project Scope
 
-### 1. CNN on Log-Mel Spectrograms
+The complete pipeline includes:
 
-Converts each audio clip into a log-mel spectrogram and trains a Convolutional Neural Network to classify UAV and non-UAV sounds.
+* Collecting and organizing UAV audio datasets
+* Processing long real-world recordings
+* Manually labeling UAV activity intervals
+* Splitting recordings into fixed-duration clips
+* Extracting several audio representations
+* Training supervised and unsupervised models
+* Comparing results across datasets
+* Studying data leakage and generalization
+* Testing metric-learning methods
+* Evaluating compact deployment models
+* Presenting results through a project website
 
-### 2. AST with Logistic Regression
+---
 
-Uses a pretrained Audio Spectrogram Transformer to extract audio embeddings. A Logistic Regression classifier is then trained on the extracted features.
+## Audio Processing
 
-### 3. Wav2Vec2 with Logistic Regression
+The preprocessing pipeline converts long recordings into model-ready examples.
 
-Uses a pretrained Wav2Vec2 model to extract embeddings directly from raw audio waveforms, followed by Logistic Regression classification.
+```text
+Raw recordings
+      ↓
+Manual time labels
+      ↓
+Mono conversion and resampling
+      ↓
+Fixed-duration audio clips
+      ↓
+Feature extraction
+      ↓
+Model training and evaluation
+```
 
-### 4. One-Class SVM
+Processing steps include:
 
-Trained mainly on background or non-UAV recordings. Audio clips that differ from the learned background distribution are identified as possible UAV sounds.
+* Reading labeled time intervals
+* Extracting UAV and background segments
+* Converting multi-channel audio to mono
+* Resampling recordings
+* Normalizing waveform values
+* Splitting long recordings into short clips
+* Handling clips from several microphones
+* Saving reusable datasets and model inputs
 
-### 5. Isolation Forest
+---
 
-An anomaly-detection model that learns the characteristics of background audio and detects unusual sounds as potential UAV activity.
+## Audio Representations
 
-### 6. Teacher-Student Anomaly Detection
+The project compares several ways to represent sound.
 
-A student model learns to reproduce the output of a fixed teacher model on normal background audio. A large difference between their outputs is used as an anomaly score.
+### Log-Mel Spectrograms
+
+Transforms each waveform into a time-frequency representation and uses a CNN to learn useful patterns.
+
+### AST Embeddings
+
+Uses a pretrained Audio Spectrogram Transformer to extract high-level audio features.
+
+### Wav2Vec2 Embeddings
+
+Uses a pretrained waveform model to create representations directly from raw audio.
+
+### YAMNet Embeddings
+
+Uses a compact pretrained audio-event model trained on a large range of sound categories.
+
+### Triplet-Learning Embeddings
+
+Adapts pretrained representations so that:
+
+* Similar clips move closer together
+* Different sound classes move further apart
+
+This is used to test whether metric learning improves UAV separation.
+
+### Raw Waveforms
+
+A compact neural network is also trained directly on one-second waveform inputs for the deployment experiment.
+
+---
+
+## Models Evaluated
+
+### Supervised Models
+
+Supervised models are trained using labeled UAV and background recordings.
+
+Methods include:
+
+* Logistic Regression
+* CNN classification
+* Compact 1-D neural networks
+
+### Isolation Forest
+
+Learns the structure of normal training examples and assigns higher anomaly scores to unusual samples.
+
+### One-Class SVM
+
+Creates a boundary around the normal training distribution. Samples outside the learned region are treated as anomalies.
+
+### Teacher-Student Anomaly Detection
+
+A student network learns to reproduce a fixed teacher network on normal audio.
+
+During inference, a large difference between the teacher and student outputs may indicate an unusual sound.
+
+---
+
+## Datasets
+
+The project uses several datasets to compare performance under different conditions.
+
+### Multiclass Drone Audio
+
+Contains UAV recordings together with multiple background sound categories.
+
+It is currently the strongest dataset in the experiments.
+
+### Binary Drone Audio
+
+Contains drone and non-drone recordings.
+
+The current experimental run produced inconsistent results and needs to be rerun before drawing conclusions.
+
+### AeroSonicDB
+
+Contains aircraft and environmental recordings.
+
+It is used to test whether methods that perform well on drone datasets also transfer to different aerial sounds.
+
+### MIMII
+
+An industrial machine-sound dataset used as an additional anomaly-detection benchmark.
+
+For example, a detector can learn normal machine operation and identify abnormal sounds.
+
+### Field Recordings
+
+The project also uses real-world recordings collected with multiple microphones and DJI UAV platforms.
+
+These recordings require manual alignment, labeling, segmentation, and quality checking.
 
 ---
 
@@ -69,201 +182,251 @@ A student model learns to reproduce the output of a fixed teacher model on norma
 The models are compared using:
 
 * ROC-AUC
+* Average Precision
 * Accuracy
 * Precision
+* Recall
 * F1-score
-* Sensitivity / Recall
-* Confusion matrix
-* Training and inference time
-* Estimated saved model size
+* Confusion matrices
+* Inference time
+* Model size
+
+For UAV detection, accuracy alone can be misleading because the datasets often contain many more background clips than UAV clips.
+
+Recall, precision, F1-score, ROC-AUC, and Average Precision are therefore especially important.
 
 ---
 
-## Project Structure
+## Preliminary Results
+
+Best preliminary result reported for each dataset:
+
+| Dataset                | Best method                               | ROC-AUC | Anomaly F1 |
+| ---------------------- | ----------------------------------------- | ------: | ---------: |
+| Multiclass Drone Audio | AST triplet embeddings + Isolation Forest |   1.000 |      0.806 |
+| MIMII Slider           | AST triplet embeddings + Isolation Forest |   1.000 |      0.947 |
+| AeroSonicDB            | Wav2Vec2 embeddings + Isolation Forest    |   0.724 |      0.365 |
+| Binary Drone Audio     | AST embeddings + Isolation Forest         |   0.468 |      0.016 |
+
+These results are preliminary.
+
+The large differences between datasets show that strong performance on one dataset does not guarantee reliable detection in another recording environment.
+
+---
+
+## Evaluation Limitations
+
+Most current experiments use a random clip-level split.
+
+This can cause clips from the same recording session to appear in both training and testing.
+
+For example:
 
 ```text
-uav-sound-classification/
-├── notebooks/
-│   ├── data_preparation.ipynb
-│   ├── training_pipeline.ipynb
-│   └── model_comparison.ipynb
-├── src/
-│   ├── config.py
-│   ├── audio_processing.py
-│   ├── features.py
-│   ├── models.py
-│   ├── anomaly.py
-│   └── evaluate.py
-├── data/
-│   ├── uav/
-│   └── background/
-├── models/
-├── requirements.txt
-├── .gitignore
-└── README.md
+Original recording
+├── clip 1 → training
+├── clip 2 → training
+└── clip 3 → testing
 ```
 
-Most of the current implementation is contained in the notebooks. Reusable functionality can later be moved into the `src/` directory.
+Because nearby clips may share the same microphone, environment, UAV, and background noise, the test results may be overly optimistic.
+
+### Planned Evaluation Improvements
+
+#### Recording-Session Split
+
+All clips from one recording session stay in the same dataset split.
+
+#### Leave-One-UAV-Out
+
+One complete UAV model or recording session is excluded from training and used only for testing.
+
+#### Unseen Negative Categories
+
+New non-UAV sounds such as alarms, engines, tools, speech, and aircraft are reserved for final testing.
+
+These experiments are necessary before claiming that the system can detect an unseen UAV.
 
 ---
 
-## Dataset Layout
+## TinyML Deployment Experiment
 
-The pipeline expects audio files to be organized into two main classes:
+TinyML is a smaller deployment branch of the overall research project.
 
-```text
-data/
-├── uav/
-│   └── ... .wav files
-└── background/
-    └── ... .wav files
-```
+A compact **mini-SE-Net** was trained directly on one-second, 16 kHz waveforms and exported to full-int8 TensorFlow Lite.
 
-* `uav/` contains audio clips where a UAV can be heard.
-* `background/` contains environmental sounds without a UAV.
+Reported measurements:
 
-Example path in Google Colab:
+| Measurement             |   Value |
+| ----------------------- | ------: |
+| Parameters              |   7,350 |
+| Model size              | 22.6 KB |
+| Keras test accuracy     |  97.84% |
+| ROC-AUC                 |  0.9950 |
+| Drone recall            |   0.870 |
+| Drone F1                |   0.821 |
+| Notebook TFLite latency | 1.32 ms |
 
-```python
-DATA_DIR = "/content/drive/MyDrive/uav_sound_project/data"
-```
+The model has not yet been fully benchmarked on the final physical edge device.
 
-Update this path to match the location of your dataset.
-
----
-
-## Audio Preparation
-
-Long recordings are divided into shorter audio clips before training.
-
-Each clip is assigned one of two labels:
-
-* `1` — UAV sound
-* `0` — Background or non-UAV sound
-
-The preparation pipeline may include:
-
-* Reading labeled time intervals
-* Splitting recordings into fixed-length clips
-* Resampling audio
-* Converting stereo audio to mono
-* Normalizing waveform values
-* Saving the clips into class folders
+Prediction consistency between the original Keras model, Python TensorFlow Lite inference, and browser inference is still being validated.
 
 ---
 
-## Installation
+## Browser Demo
 
-Create a Python environment and install the required dependencies:
+The project website contains an experimental local audio demo.
+
+The demo:
+
+* Accepts uploaded recordings
+* Supports microphone recording
+* Converts audio to mono
+* Resamples it to 16 kHz
+* Splits it into one-second windows
+* Runs a TensorFlow Lite model in the browser
+* Displays scores for each audio window
+
+The audio is processed locally and is not uploaded to a server.
+
+The browser demo is a deployment demonstration and not the main research result.
+
+---
+
+## Running the Project
+
+Clone the repository:
+
+```bash
+git clone https://github.com/roeiyanku/UAV_Sound_Classification_Project.git
+cd UAV_Sound_Classification_Project
+```
+
+Install the dependencies:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-The main libraries include:
+Main libraries include:
 
 * NumPy
 * Pandas
 * Librosa
 * Scikit-learn
-* TensorFlow or PyTorch
+* TensorFlow
+* PyTorch
 * Hugging Face Transformers
 * Matplotlib
+* Joblib
 
----
+Most experiments are designed to run in Google Colab.
 
-## How to Run
-
-### Option 1: Google Colab
-
-1. Upload the notebooks to Google Drive.
-2. Open the main notebook with Google Colab.
-3. Mount Google Drive.
-4. Update the `DATA_DIR` variable.
-5. Run the notebook from top to bottom.
-
-### Option 2: Local Machine
-
-1. Clone the repository:
-
-```bash
-git clone <repository-url>
-cd uav-sound-classification
-```
-
-2. Install the dependencies:
-
-```bash
-pip install -r requirements.txt
-```
-
-3. Place the dataset inside the expected folder structure.
-4. Update the dataset path.
-5. Run the notebooks using Jupyter.
-
----
-
-## Clean Code Principles
-
-The project follows several basic clean-code practices:
-
-* Avoid repeating configuration values
-* Keep functions short and focused
-* Use descriptive names
-* Separate preprocessing, feature extraction, training, and evaluation
-* Use the same evaluation process for every model
-* Make it possible to replace one model without changing the entire pipeline
-
-For example, shared values are defined once:
+Update the project and dataset paths before running the notebooks:
 
 ```python
-SAMPLE_RATE = 16000
-CLIP_SECONDS = 5
-BATCH_SIZE = 32
-RANDOM_STATE = 42
+PROJECT_DIR = "/content/drive/MyDrive/Final Project RMOT"
 ```
 
-This makes experiments easier to reproduce and update.
+Run the notebooks in the order required for:
+
+1. Data preparation
+2. Dataset splitting
+3. Feature extraction
+4. Model training
+5. Anomaly detection
+6. Model comparison
+7. Deployment experiments
 
 ---
 
-## Future Improvements
+## Website
 
-Possible improvements include:
+The GitHub Pages website files are stored inside:
 
-* Collecting more UAV recordings from different environments
-* Testing different UAV models and flight distances
-* Adding audio augmentation such as noise, pitch shifting, and time shifting
-* Evaluating performance at different signal-to-noise ratios
-* Moving reusable notebook code into the `src/` directory
-* Adding command-line training and inference scripts
-* Adding real-time microphone detection
-* Testing deployment on edge devices
-* Adding unit tests
-* Saving experiment results automatically
-* Creating a simple web interface for uploading and analyzing audio
+```text
+docs/
+```
 
----
+Run the website locally with:
 
-## Notes
+```bash
+cd docs
+python -m http.server 8000
+```
 
-The project uses pretrained Hugging Face models such as AST and Wav2Vec2. During the first run, their model weights will be downloaded automatically.
+Then open:
 
-These models can require significant memory and may run faster with GPU acceleration.
-
-Performance may also vary depending on:
-
-* UAV distance
-* UAV model
-* Wind and environmental noise
-* Recording device
-* Clip duration
-* Signal-to-noise ratio
+```text
+http://localhost:8000
+```
 
 ---
 
-## Author
+## Main Limitations
 
-**Roei Yanku**
+An unusual sound is not automatically a UAV.
 
-Computer Science student interested in machine learning, audio processing, UAV systems, and practical AI applications.
+An anomaly detector may also react to:
+
+* Alarms
+* Cars and engines
+* Aircraft
+* Construction equipment
+* Speech
+* Wind
+* Recording artifacts
+* Unfamiliar environmental sounds
+
+A reliable real-world detector requires diverse training data, difficult negative examples, unseen-UAV evaluation, and testing on the final recording hardware.
+
+---
+
+## Next Steps
+
+* Rerun inconsistent dataset experiments
+* Use recording-session splits
+* Perform leave-one-UAV-out testing
+* Add more difficult background categories
+* Compare different UAV models and distances
+* Test performance under different signal-to-noise ratios
+* Add overlapping audio windows
+* Add temporal smoothing
+* Improve probability calibration and thresholds
+* Validate the browser inference pipeline
+* Benchmark the compact model on physical edge hardware
+* Test whether anomaly detection can distinguish UAVs from other unusual sounds
+
+---
+
+## Team
+
+### Roei Yanku — ML and Audio Engineering
+
+Audio processing, feature extraction, model training, experiment integration, TinyML export, and browser-demo implementation.
+
+### Melissa Liebowitz — Research and Experimentation
+
+Field data collection, experiment execution, evaluation support, research, and project documentation.
+
+### Tal Kfir — Team Lead
+
+Project coordination, planning, task assignment, and milestone tracking.
+
+### Or Anidjar — Project Oversight
+
+Overall responsibility, direction, and project-level oversight.
+
+### Boaz Ben-Moshe — Laboratory and Field Support
+
+Provided access to research equipment, laboratory facilities, DJI platforms, and field-recording support.
+
+---
+
+## Project Status
+
+This is an active research project.
+
+The main focus is comparing audio representations and detection methods while building a more reliable evaluation protocol for unseen UAVs and real-world recording conditions.
+
+The current results should be treated as preliminary until recording-level and leave-one-UAV-out experiments are completed.
