@@ -1,0 +1,32 @@
+name: Publish benchmark page
+
+on:
+  push:
+    paths:
+      - "scripts/publish_benchmark_results.py"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-page:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Update benchmark results on GitHub Pages
+        run: python scripts/publish_benchmark_results.py
+
+      - name: Commit updated page
+        run: |
+          if git diff --quiet -- docs/index.html; then
+            echo "No page changes were required."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/index.html
+          git commit -m "Update measured benchmark results on project page"
+          git push
