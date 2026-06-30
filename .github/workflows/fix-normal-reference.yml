@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - "scripts/fix_normal_reference_calibration.py"
+      - ".github/workflows/fix-normal-reference.yml"
   workflow_dispatch:
 
 permissions:
