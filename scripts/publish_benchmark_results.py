@@ -6,6 +6,21 @@ from pathlib import Path
 PAGE = Path("docs/index.html")
 html = PAGE.read_text(encoding="utf-8")
 
+# Add a visible route from the main site to the dedicated datasets page.
+nav_before = '<a href="#data">Data</a><a href="#demo">Live demo</a>'
+nav_after = '<a href="#data">Data</a><a href="datasets/">Datasets</a><a href="#demo">Live demo</a>'
+if '<a href="datasets/">Datasets</a>' not in html:
+    if nav_before not in html:
+        raise RuntimeError("Could not find the main navigation data link.")
+    html = html.replace(nav_before, nav_after, 1)
+
+hero_before = '<a class="btn" href="#data">Watch field recording</a>'
+hero_after = '<a class="btn" href="#data">Watch field recording</a><a class="btn" href="datasets/">Explore datasets</a>'
+if 'href="datasets/">Explore datasets</a>' not in html:
+    if hero_before not in html:
+        raise RuntimeError("Could not find the hero field-recording button.")
+    html = html.replace(hero_before, hero_after, 1)
+
 # Clarify that the historical per-model latency column measured only the saved
 # classifier, then place the new stage-by-stage benchmark directly below it.
 old_transition = (
