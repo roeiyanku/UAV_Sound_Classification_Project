@@ -55,7 +55,7 @@ nav{position:sticky;top:0;z-index:50;background:rgba(8,19,29,.9);backdrop-filter
 <div class="demo-or">or test a known example</div>
 <div class="sample-buttons"><button class="sample-btn" data-name="drone-example.wav" data-sample="assets/demo-drone.wav" type="button">▶ Drone example</button><button class="sample-btn" data-name="normal-example.wav" data-sample="assets/demo-normal.wav" type="button">▶ Normal example</button></div>
 <button class="record-btn" id="recordBtn" type="button">● Record from microphone</button>
-<p class="demo-hint">The model expects one-second windows. Scores from 30% to 70% are shown as uncertain. Very short trailing fragments are ignored.</p>
+<p class="demo-hint">The built-in buttons use labeled project WAV recordings: one UAV example and one background example. For microphone testing, play audio from a separate device or speaker and record for at least one second. Scores from 30% to 70% are shown as uncertain.</p>
 <div class="demo-status" id="demoStatus">Select an example or upload your own recording.</div>
 </article>
 <article aria-live="polite" class="demo-output card">
@@ -228,9 +228,9 @@ nav{position:sticky;top:0;z-index:50;background:rgba(8,19,29,.9);backdrop-filter
     try {
       outputTensor = model.predict(inputTensor);
       const raw = outputTensor.dataSync();
-      // Model class order: 0 = background, 1 = drone.
-      let normalScore = Math.max(0, Math.min(1, (raw[0] - OUTPUT_ZERO_POINT) * OUTPUT_SCALE));
-      let droneScore = Math.max(0, Math.min(1, (raw[1] - OUTPUT_ZERO_POINT) * OUTPUT_SCALE));
+      // Training class order: 0 = drone, 1 = background.
+      let droneScore = Math.max(0, Math.min(1, (raw[0] - OUTPUT_ZERO_POINT) * OUTPUT_SCALE));
+      let normalScore = Math.max(0, Math.min(1, (raw[1] - OUTPUT_ZERO_POINT) * OUTPUT_SCALE));
       const total = droneScore + normalScore;
       if (total > 0) {
         droneScore /= total;
@@ -372,7 +372,14 @@ nav{position:sticky;top:0;z-index:50;background:rgba(8,19,29,.9);backdrop-filter
       return;
     }
     try {
-      recordingStream = await navigator.mediaDevices.getUserMedia({audio: true});
+      recordingStream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          channelCount: 1,
+          echoCancellation: false,
+          noiseSuppression: false,
+          autoGainControl: false
+        }
+      });
       recordingChunks = [];
       const preferred = MediaRecorder.isTypeSupported('audio/webm;codecs=opus') ? 'audio/webm;codecs=opus' : '';
       recorder = preferred ? new MediaRecorder(recordingStream, {mimeType: preferred}) : new MediaRecorder(recordingStream);
@@ -387,7 +394,7 @@ nav{position:sticky;top:0;z-index:50;background:rgba(8,19,29,.9);backdrop-filter
       recorder.start();
       recordBtn.textContent = '■ Stop and analyze';
       recordBtn.classList.add('recording');
-      setStatus('Recording… press stop when the sample is ready.', 'busy');
+      setStatus('Recording raw microphone audio… play the sound from another device or speaker, then press stop after at least one second.', 'busy');
     } catch (error) {
       setStatus('Microphone permission was denied or unavailable.', 'error');
     }
