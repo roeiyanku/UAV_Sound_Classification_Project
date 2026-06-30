@@ -3,7 +3,6 @@ name: Fix normal reference calibration
 on:
   push:
     paths:
-      - "scripts/fix_normal_reference_calibration.py"
       - ".github/workflows/fix-normal-reference.yml"
   workflow_dispatch:
 
@@ -17,8 +16,28 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Correct normal-reference calibration
-        run: python scripts/fix_normal_reference_calibration.py
+      - name: Correct normal-reference score mapping
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          page = Path("docs/index.html")
+          html = page.read_text(encoding="utf-8")
+
+          old = "if (!Number.isFinite(span) || span < 0.10) return rawScore;"
+          new = "if (!Number.isFinite(span) || span <= 1e-6) return rawScore;"
+          if old not in html:
+              raise RuntimeError("Current calibration fallback was not found")
+          html = html.replace(old, new, 1)
+
+          html = html.replace(
+              "const DEMO_VERSION = '20260630-calibrated-v2';",
+              "const DEMO_VERSION = '20260630-calibrated-v3';",
+              1,
+          )
+
+          page.write_text(html, encoding="utf-8")
+          PY
 
       - name: Commit corrected page
         run: |
@@ -29,5 +48,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add docs/index.html
-          git commit -m "Fix normal example calibration"
+          git commit -m "Map the normal reference to zero score"
           git push
