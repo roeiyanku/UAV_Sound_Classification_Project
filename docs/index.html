@@ -86,7 +86,7 @@ nav{position:sticky;top:0;z-index:50;background:rgba(8,19,29,.9);backdrop-filter
   const MIN_REMAINDER_FRACTION = 0.50;
   const MIN_RMS = 0.003;
   const MIN_PEAK = 0.015;
-  const DEMO_VERSION = '20260630-calibrated-v2';
+  const DEMO_VERSION = '20260630-calibrated-v3';
   const INPUT_SCALE = 0.007843137718737125;
   const INPUT_ZERO_POINT = -1;
   const OUTPUT_SCALE = 0.00390625;
@@ -354,7 +354,7 @@ nav{position:sticky;top:0;z-index:50;background:rgba(8,19,29,.9);backdrop-filter
 
   function calibrateDroneScore(rawScore) {
     const span = droneReferenceScore - normalReferenceScore;
-    if (!Number.isFinite(span) || span < 0.10) return rawScore;
+    if (!Number.isFinite(span) || span <= 1e-6) return rawScore;
     return Math.max(0, Math.min(1, (rawScore - normalReferenceScore) / span));
   }
 
