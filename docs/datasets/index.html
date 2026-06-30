@@ -1,109 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Public dataset sources used in the UAV sound detection research project.">
-  <title>Dataset Sources | UAV Sound Detection</title>
-  <style>
-    :root {
-      --bg: #08131d;
-      --surface: #101f2c;
-      --surface2: #132535;
-      --line: #25394b;
-      --ink: #f1f6fa;
-      --muted: #aab8c4;
-      --cyan: #55d6d9;
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      background: var(--bg);
-      color: var(--ink);
-      font-family: Inter, system-ui, sans-serif;
-      line-height: 1.65;
-    }
-    a { color: var(--cyan); }
-    .wrap { width: min(960px, calc(100% - 40px)); margin: auto; }
-    header { padding: 72px 0 42px; border-bottom: 1px solid var(--line); }
-    main { padding: 48px 0 80px; }
-    .eyebrow { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--cyan); }
-    h1 { font-size: clamp(38px, 7vw, 66px); line-height: 1.05; margin: 14px 0 20px; }
-    .lead { color: var(--muted); font-size: 18px; max-width: 720px; }
-    .back { display: inline-block; margin-top: 22px; text-decoration: none; }
-    .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
-    .card {
-      background: linear-gradient(180deg, var(--surface2), var(--surface));
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      padding: 24px;
-    }
-    .card h2 { margin: 0 0 8px; font-size: 21px; }
-    .card p { color: var(--muted); margin: 0 0 16px; }
-    .source { font-size: 14px; font-weight: 600; }
-    .note { margin-top: 28px; padding: 22px; border-left: 3px solid var(--cyan); background: rgba(85,214,217,.05); color: var(--muted); }
-    footer { border-top: 1px solid var(--line); padding: 26px 0 40px; color: var(--muted); font-size: 13px; }
-    @media (max-width: 700px) { .grid { grid-template-columns: 1fr; } }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Dataset sources and one-second sample counts used in the UAV sound detection project.">
+<title>Datasets | UAV Sound Detection</title>
+<style>
+:root{--bg:#08131d;--surface:#101f2c;--surface2:#132535;--line:#25394b;--ink:#f1f6fa;--muted:#aab8c4;--faint:#708292;--cyan:#55d6d9;--green:#6ed3a8}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,sans-serif;line-height:1.65}a{color:var(--cyan)}.wrap{width:min(1040px,calc(100% - 40px));margin:auto}header{padding:72px 0 42px;border-bottom:1px solid var(--line)}main{padding:48px 0 80px}section+section{margin-top:60px}.eyebrow{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--cyan)}h1{font-size:clamp(38px,7vw,66px);line-height:1.05;margin:14px 0 20px}h2{font-size:clamp(25px,4vw,36px);line-height:1.15;margin:0 0 10px}.lead,.section-lead,.card p,.count-card p{color:var(--muted)}.lead{font-size:18px;max-width:760px}.section-lead{margin:0 0 24px}.back{display:inline-block;margin-top:22px;text-decoration:none}.summary{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:26px 0}.summary div,.card,.count-card{background:linear-gradient(180deg,var(--surface2),var(--surface));border:1px solid var(--line);border-radius:16px}.summary div{padding:20px}.summary small{display:block;color:var(--faint);font-size:10px;letter-spacing:.1em;text-transform:uppercase}.summary strong{display:block;margin-top:8px;color:var(--cyan);font-size:27px}.count-grid{display:grid;gap:18px}.count-card{padding:24px;overflow-x:auto}.count-card h3,.card h3{margin:0 0 6px;font-size:21px}.count-card p,.card p{margin:0 0 15px}table{width:100%;min-width:650px;border-collapse:collapse;font-size:14px}th,td{padding:11px 13px;border-top:1px solid var(--line);text-align:right}th:first-child,td:first-child{text-align:left}th{color:var(--faint);font-size:10px;letter-spacing:.08em;text-transform:uppercase}td{color:var(--muted)}td:first-child,td:last-child{color:var(--ink);font-weight:600}tfoot td{color:var(--green)}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}.card{padding:24px}.source{font-size:14px;font-weight:600}.note{margin-top:26px;padding:20px;border-left:3px solid var(--cyan);background:rgba(85,214,217,.05);color:var(--muted)}footer{border-top:1px solid var(--line);padding:26px 0 40px;color:var(--muted);font-size:13px}@media(max-width:800px){.summary{grid-template-columns:repeat(2,1fr)}}@media(max-width:700px){.grid{grid-template-columns:1fr}}@media(max-width:480px){.summary{grid-template-columns:1fr}}
+</style>
 </head>
 <body>
-  <header>
-    <div class="wrap">
-      <div class="eyebrow">Research data</div>
-      <h1>Dataset Sources</h1>
-      <p class="lead">Public datasets used in the UAV sound detection and anomaly-detection experiments, together with project-collected field recordings.</p>
-      <a class="back" href="../">← Back to the project website</a>
-    </div>
-  </header>
-
-  <main>
-    <div class="wrap">
-      <div class="grid">
-        <article class="card">
-          <h2>Multiclass Drone Audio</h2>
-          <p>Recordings of several drone types and background sound categories. Used for the main UAV anomaly-detection experiments.</p>
-          <a class="source" href="https://github.com/saraalemadi/DroneAudioDataset" target="_blank" rel="noopener noreferrer">Open source dataset ↗</a>
-        </article>
-
-        <article class="card">
-          <h2>Binary Drone Audio</h2>
-          <p>Labeled drone and non-drone recordings used for binary audio-detection experiments.</p>
-          <a class="source" href="https://www.kaggle.com/datasets/amineipad/drone-sound-audio-detection" target="_blank" rel="noopener noreferrer">Open on Kaggle ↗</a>
-        </article>
-
-        <article class="card">
-          <h2>AeroSonicDB</h2>
-          <p>Low-flying aircraft, silence, and urban environmental recordings used to test transfer to other aerial sounds.</p>
-          <a class="source" href="https://www.kaggle.com/datasets/gray8ed/audio-dataset-of-low-flying-aircraft-aerosonicdb" target="_blank" rel="noopener noreferrer">Open on Kaggle ↗</a>
-        </article>
-
-        <article class="card">
-          <h2>MIMII</h2>
-          <p>Normal and anomalous industrial-machine sounds used as an additional anomaly-detection benchmark. Reported experiments currently use the slider subset.</p>
-          <a class="source" href="https://zenodo.org/records/3384388" target="_blank" rel="noopener noreferrer">Open on Zenodo ↗</a>
-        </article>
-
-        <article class="card">
-          <h2>Project Field Recordings</h2>
-          <p>Outdoor DJI UAV and background recordings collected by the project team with multiple microphones, flight paths, and recording conditions.</p>
-          <span class="source">Not publicly distributed</span>
-        </article>
-
-        <article class="card">
-          <h2>Supplemental Online Audio</h2>
-          <p>Additional exploratory FPV, UAV, and environmental recordings used during data investigation and labeling.</p>
-          <span class="source">Individual source links are documented with the project data</span>
-        </article>
-      </div>
-
-      <div class="note">
-        The original public datasets remain subject to their own licenses and terms of use. This project does not redistribute the complete datasets.
-      </div>
-    </div>
-  </main>
-
-  <footer>
-    <div class="wrap">UAV Sound Detection and Anomaly-Detection Research</div>
-  </footer>
-</body>
-</html>
+<header><div class="wrap"><div class="eyebrow">Research data</div><h1>Datasets and sample counts</h1><p class="lead">One-second audio samples prepared from project-recorded UAV and background audio, together with public datasets used in the experiments.</p><a class="back" href="../">← Back to the project website</a></div></header>
+<main><div class="wrap">
+<section><div class="eyebrow">Project-recorded data</div><h2>One-second audio sample inventory</h2><p class="section-lead">Each sample is one WAV file representing one second of audio. Counts are separated into train, validation, and test splits.</p>
+<div class="summary"><div><small>Recorded datasets</small><strong>3</strong></div><div><small>UAV-class samples</small><strong>~77,763</strong></div><div><small>Background samples</small><strong>129,309</strong></div><div><small>Total samples</small><strong>~207,072</strong></div></div>
+<div class="count-grid">
+<article class="count-card"><h3>UAV dataset</h3><p>General UAV recordings paired with background audio.</p><table><thead><tr><th>Class</th><th>Train</th><th>Validation</th><th>Test</th><th>Total</th></tr></thead><tbody><tr><td>UAV</td><td>~33,456</td><td>7,195</td><td>7,189</td><td>~47,840</td></tr><tr><td>Background</td><td>63,997</td><td>13,740</td><td>13,740</td><td>91,477</td></tr></tbody><tfoot><tr><td>Dataset total</td><td>~97,453</td><td>20,935</td><td>20,929</td><td>~139,317</td></tr></tfoot></table></article>
+<article class="count-card"><h3>Electric UAV dataset</h3><p>The electric-UAV training split is augmented.</p><table><thead><tr><th>Class</th><th>Train</th><th>Validation</th><th>Test</th><th>Total</th></tr></thead><tbody><tr><td>Electric UAV</td><td>4,536*</td><td>224</td><td>224</td><td>4,984</td></tr><tr><td>Background</td><td>11,920</td><td>2,576</td><td>2,576</td><td>17,072</td></tr></tbody><tfoot><tr><td>Dataset total</td><td>16,456</td><td>2,800</td><td>2,800</td><td>22,056</td></tr></tfoot></table><p style="margin-top:10px">* <code>electric_uav/augmented_train</code></p></article>
+<article class="count-card"><h3>FPV dataset</h3><p>FPV drone recordings paired with background audio.</p><table><thead><tr><th>Class</th><th>Train</th><th>Validation</th><th>Test</th><th>Total</th></tr></thead><tbody><tr><td>Drone</td><td>17,339</td><td>3,800</td><td>3,800</td><td>24,939</td></tr><tr><td>Background</td><td>16,126</td><td>1,100</td><td>3,534</td><td>20,760</td></tr></tbody><tfoot><tr><td>Dataset total</td><td>33,465</td><td>4,900</td><td>7,334</td><td>45,699</td></tr></tfoot></table></article>
+</div><div class="note">The UAV training count was provided as an approximate value, so totals marked with “~” are approximate. These are counts of one-second split files, not original recording sessions.</div></section>
+<section><div class="eyebrow">External sources</div><h2>Public datasets used in experiments</h2><p class="section-lead">The original datasets remain hosted by their publishers.</p><div class="grid">
+<article class="card"><h3>Multiclass Drone Audio</h3><p>Several drone types and background sound categories used for the main UAV anomaly-detection experiments.</p><a class="source" href="https://github.com/saraalemadi/DroneAudioDataset" target="_blank" rel="noopener noreferrer">Open source dataset ↗</a></article>
+<article class="card"><h3>Binary Drone Audio</h3><p>Labeled drone and non-drone recordings used for binary audio-detection experiments.</p><a class="source" href="https://www.kaggle.com/datasets/amineipad/drone-sound-audio-detection" target="_blank" rel="noopener noreferrer">Open on Kaggle ↗</a></article>
+<article class="card"><h3>AeroSonicDB</h3><p>Low-flying aircraft, silence, and urban recordings used to test transfer to other aerial sounds.</p><a class="source" href="https://www.kaggle.com/datasets/gray8ed/audio-dataset-of-low-flying-aircraft-aerosonicdb" target="_blank" rel="noopener noreferrer">Open on Kaggle ↗</a></article>
+<article class="card"><h3>MIMII</h3><p>Normal and anomalous industrial-machine sounds used as an additional anomaly-detection benchmark.</p><a class="source" href="https://zenodo.org/records/3384388" target="_blank" rel="noopener noreferrer">Open on Zenodo ↗</a></article>
+<article class="card"><h3>Project Field Recordings</h3><p>Outdoor DJI UAV and background recordings collected with multiple microphones and flight conditions.</p><span class="source">Not publicly distributed</span></article>
+<article class="card"><h3>Supplemental Online Audio</h3><p>Additional exploratory FPV, UAV, and environmental recordings used during investigation and labeling.</p><span class="source">Source links are documented with the project data</span></article>
+</div><div class="note">Public datasets remain subject to their own licenses and terms of use. This project does not redistribute the complete datasets.</div></section>
+</div></main><footer><div class="wrap">UAV Sound Detection and Anomaly-Detection Research</div></footer>
+</body></html>
