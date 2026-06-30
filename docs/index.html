@@ -86,7 +86,7 @@ nav{position:sticky;top:0;z-index:50;background:rgba(8,19,29,.9);backdrop-filter
   const MIN_REMAINDER_FRACTION = 0.50;
   const MIN_RMS = 0.003;
   const MIN_PEAK = 0.015;
-  const DEMO_VERSION = '20260630-calibrated';
+  const DEMO_VERSION = '20260630-calibrated-v2';
   const INPUT_SCALE = 0.007843137718737125;
   const INPUT_ZERO_POINT = -1;
   const OUTPUT_SCALE = 0.00390625;
@@ -282,6 +282,17 @@ nav{position:sticky;top:0;z-index:50;background:rgba(8,19,29,.9);backdrop-filter
     return ordered.length % 2 ? ordered[middle] : (ordered[middle - 1] + ordered[middle]) / 2;
   }
 
+  function quantile(values, fraction) {
+    const ordered = [...values].sort((a, b) => a - b);
+    if (!ordered.length) return 0;
+    const position = (ordered.length - 1) * fraction;
+    const lower = Math.floor(position);
+    const upper = Math.ceil(position);
+    if (lower === upper) return ordered[lower];
+    const weight = position - lower;
+    return ordered[lower] * (1 - weight) + ordered[upper] * weight;
+  }
+
   async function fetchReferenceAudio(path, name) {
     const response = await fetch(`${path}?v=${DEMO_VERSION}`, {cache: 'no-store'});
     if (!response.ok) throw new Error(`Could not load ${name} reference audio.`);
@@ -314,9 +325,14 @@ nav{position:sticky;top:0;z-index:50;background:rgba(8,19,29,.9);backdrop-filter
     const separation0 = median(droneScores[0]) - median(normalScores[0]);
     const separation1 = median(droneScores[1]) - median(normalScores[1]);
     droneOutputIndex = separation0 >= separation1 ? 0 : 1;
-    droneReferenceScore = median(droneScores[droneOutputIndex]);
-    normalReferenceScore = median(normalScores[droneOutputIndex]);
-
+    const chosenDrone = droneScores[droneOutputIndex];
+    const chosenNormal = normalScores[droneOutputIndex];
+    normalReferenceScore = Math.max.apply(null, chosenNormal);
+    droneReferenceScore = quantile(chosenDrone, 0.25);
+    if (droneReferenceScore <= normalReferenceScore + 0.02) {
+      normalReferenceScore = quantile(chosenNormal, 0.90);
+      droneReferenceScore = quantile(chosenDrone, 0.10);
+    }
     if (droneReferenceScore <= normalReferenceScore) {
       throw new Error('The labeled reference clips did not produce a valid UAV/background separation.');
     }
@@ -408,13 +424,14 @@ nav{position:sticky;top:0;z-index:50;background:rgba(8,19,29,.9);backdrop-filter
     const droneSegments = activeSegments.filter(item => item.label === 'drone');
     const uncertainSegments = activeSegments.filter(item => item.label === 'uncertain');
     const requiredDroneWindows = activeSegments.length <= 2 ? 1 : Math.max(2, Math.ceil(activeSegments.length * 0.40));
+    const requiredUncertainWindows = activeSegments.length <= 2 ? 1 : Math.max(2, Math.ceil(activeSegments.length * 0.40));
     const strongestScores = rankedSegments.slice(0, Math.min(2, rankedSegments.length)).map(item => item.drone_score);
     const strongestMean = strongestScores.reduce((sum, value) => sum + value, 0) / strongestScores.length;
 
     let recordingLabel = 'normal';
     if (droneSegments.length >= requiredDroneWindows && strongestMean >= UAV_THRESHOLD) {
       recordingLabel = 'drone';
-    } else if (droneSegments.length > 0 || uncertainSegments.length > 0) {
+    } else if (droneSegments.length > 0 || uncertainSegments.length >= requiredUncertainWindows) {
       recordingLabel = 'uncertain';
     }
 
